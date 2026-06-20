@@ -34,6 +34,9 @@ devmem repo erpai-report
 
 # Recent activity across all repos
 devmem timeline
+
+# Drop index entries for checkouts that were deleted from disk
+devmem prune
 ```
 
 The database lives at `~/.devmem.db` by default; override with `--db <path>`.
