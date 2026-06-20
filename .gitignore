@@ -10,3 +10,6 @@
 
 # OS / editor
 .DS_Store
+
+# Local planning scratch (not part of the published project)
+devmem-proposal.md
