@@ -72,6 +72,34 @@ func (s *Store) FindRepos(name string) ([]RepoStatus, error) {
 	return out, rows.Err()
 }
 
+// SearchWIP returns checkouts with uncommitted/unpushed/stashed work whose name
+// or current branch matches term — the work most at risk of being lost.
+func (s *Store) SearchWIP(term string) ([]RepoStatus, error) {
+	like := "%" + term + "%"
+	rows, err := s.db.Query(`
+		SELECT w.path, r.name, r.path, r.current_branch, r.is_dirty, r.ahead_count, r.stash_count, r.is_worktree
+		FROM repos r
+		JOIN workspaces w ON w.id = r.workspace_id
+		WHERE (r.is_dirty = 1 OR r.ahead_count > 0 OR r.stash_count > 0)
+		  AND (r.name LIKE ? OR r.current_branch LIKE ?)
+		ORDER BY w.path`, like, like)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []RepoStatus
+	for rows.Next() {
+		var rs RepoStatus
+		if err := rows.Scan(&rs.Workspace, &rs.Name, &rs.Path, &rs.CurrentBranch,
+			&rs.IsDirty, &rs.AheadCount, &rs.StashCount, &rs.IsWorktree); err != nil {
+			return nil, err
+		}
+		out = append(out, rs)
+	}
+	return out, rows.Err()
+}
+
 // RecentCommits returns the latest commits for a repo path.
 func (s *Store) RecentCommits(repoPath string, limit int) ([]SearchHit, error) {
 	rows, err := s.db.Query(`
