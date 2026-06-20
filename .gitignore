@@ -1,0 +1,12 @@
+# Binaries
+/devmem
+*.exe
+
+# Local database
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# OS / editor
+.DS_Store
