@@ -150,6 +150,20 @@ make check      # fmt, vet and test
 make help       # list all targets
 ```
 
+## Releasing
+
+Releases are built and published automatically by GitHub Actions whenever a
+version tag is pushed. [GoReleaser](https://goreleaser.com) cross-compiles the
+binaries (linux/darwin/windows × amd64/arm64), stamps the version into
+`--version`, and attaches the archives plus `checksums.txt` to a GitHub Release.
+
+To cut a release:
+
+```bash
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
