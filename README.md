@@ -15,15 +15,27 @@ repositories, and recover the uncommitted or unpushed work that would otherwise 
 
 ## Install
 
+Install the latest release binary (Linux/macOS) and add it to your PATH:
+
 ```bash
-make build      # produces ./devmem in the project directory
-make install    # installs the binary into $GOBIN
+curl -fsSL https://raw.githubusercontent.com/rushikeshg25/devmem/master/install.sh | sh
 ```
+
+This drops `devmem` into `$HOME/.local/bin` (override with `DEVMEM_BIN_DIR`) and
+tells you if that directory isn't on your PATH. Prebuilt archives for every
+platform are on the [releases page](https://github.com/rushikeshg25/devmem/releases).
 
 Or build directly with Go:
 
 ```bash
 go install github.com/rushikeshg25/devmem@latest
+```
+
+Or from a checkout:
+
+```bash
+make build      # produces ./devmem in the project directory
+make install    # installs the binary into $GOBIN
 ```
 
 ## Quick start
