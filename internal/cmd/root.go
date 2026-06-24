@@ -2,9 +2,7 @@
 package cmd
 
 import (
-	"os"
-	"path/filepath"
-
+	"github.com/rushikeshg25/devmem/internal/dbpath"
 	"github.com/spf13/cobra"
 )
 
@@ -34,14 +32,5 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&dbPath, "db", defaultDBPath(), "path to the devmem sqlite database")
-}
-
-// defaultDBPath returns ~/.devmem.db, falling back to the current directory.
-func defaultDBPath() string {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "devmem.db"
-	}
-	return filepath.Join(home, ".devmem.db")
+	rootCmd.PersistentFlags().StringVar(&dbPath, "db", dbpath.Default(), "path to the devmem sqlite database")
 }
