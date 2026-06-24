@@ -17,12 +17,8 @@ func newSearchView(svc *Service, win fyne.Window) fyne.CanvasObject {
 
 	list := widget.NewList(
 		func() int { return len(hits) },
-		func() fyne.CanvasObject { return widget.NewLabel("") },
-		func(i widget.ListItemID, o fyne.CanvasObject) {
-			h := hits[i]
-			o.(*widget.Label).SetText(fmt.Sprintf("%s  %s  [%s]  %s",
-				h.CommitTime.Format("2006-01-02"), h.Repo, branchOrDash(h.Branch), h.Message))
-		},
+		newCommitCell,
+		func(i widget.ListItemID, o fyne.CanvasObject) { updateCommitCell(o, hits[i]) },
 	)
 
 	status := widget.NewLabel("Type a term and press Enter to search.")
@@ -42,12 +38,4 @@ func newSearchView(svc *Service, win fyne.Window) fyne.CanvasObject {
 
 	header := container.NewBorder(nil, nil, nil, nil, entry)
 	return container.NewBorder(header, status, nil, nil, list)
-}
-
-// branchOrDash renders an empty branch as a dash, matching the CLI output.
-func branchOrDash(branch string) string {
-	if branch == "" {
-		return "-"
-	}
-	return branch
 }
