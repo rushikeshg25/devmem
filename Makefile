@@ -1,6 +1,7 @@
-BINARY := devmem
-PKG     := ./...
-GOBIN   ?= $(shell go env GOPATH)/bin
+BINARY     := devmem
+GUI_BINARY := devmem-gui
+PKG        := ./...
+GOBIN      ?= $(shell go env GOPATH)/bin
 
 .DEFAULT_GOAL := build
 
@@ -15,6 +16,14 @@ install: ## Install devmem into $GOBIN
 .PHONY: run
 run: ## Build and run (use ARGS="scan ~/workspaces")
 	go run . $(ARGS)
+
+.PHONY: build-gui
+build-gui: ## Compile the devmem-gui desktop binary (requires CGo + GL/X11 headers)
+	CGO_ENABLED=1 go build -o $(GUI_BINARY) ./cmd/devmem-gui
+
+.PHONY: run-gui
+run-gui: ## Build and run the desktop GUI
+	CGO_ENABLED=1 go run ./cmd/devmem-gui
 
 .PHONY: test
 test: ## Run the test suite
@@ -41,7 +50,7 @@ check: fmt vet test ## Format, vet and test
 
 .PHONY: clean
 clean: ## Remove build artifacts and local databases
-	rm -f $(BINARY) *.db *.db-journal *.db-wal *.db-shm
+	rm -f $(BINARY) $(GUI_BINARY) *.db *.db-journal *.db-wal *.db-shm
 
 .PHONY: help
 help: ## Show this help
