@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=DevMem
+GenericName=Git Workspace Memory
+Comment=Search commits, branches and at-risk work across your git workspaces
+Exec=devmem-gui
+Icon=devmem
+Terminal=false
+Categories=Development;Utility;
+Keywords=git;workspace;commits;search;

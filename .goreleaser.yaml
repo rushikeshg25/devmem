@@ -25,12 +25,38 @@ builds:
       - goos: windows
         goarch: arm64
 
+  # Desktop GUI. Requires CGo + GL/X11 headers, so it is built only for Linux
+  # amd64 (the Ubuntu target) to avoid CGo cross-compilation. The CGo-free
+  # devmem CLI above is unaffected.
+  - id: devmem-gui
+    main: ./cmd/devmem-gui
+    binary: devmem-gui
+    env:
+      - CGO_ENABLED=1
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+    goos:
+      - linux
+    goarch:
+      - amd64
+
 archives:
   - id: devmem
+    ids:
+      - devmem
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
       - goos: windows
         format: zip
+
+  # Bundle the GUI binary with its .desktop entry and icon for Ubuntu.
+  - id: devmem-gui
+    ids:
+      - devmem-gui
+    name_template: "{{ .ProjectName }}-gui_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - packaging/devmem-gui.desktop
+      - packaging/icon.png
 
 checksum:
   name_template: "checksums.txt"
