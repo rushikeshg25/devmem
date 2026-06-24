@@ -130,6 +130,47 @@ Pruned 1 repos and 1 empty workspaces
 | ------ | -------------- | ------------------------------------ |
 | `--db` | `~/.devmem.db` | Path to the devmem SQLite database.  |
 
+## Desktop GUI (Ubuntu)
+
+DevMem ships an optional desktop app, `devmem-gui`, built with
+[Fyne](https://fyne.io). It reads the same `~/.devmem.db` database as the CLI and
+puts search, at-risk work, the timeline and scanning behind a tabbed window:
+
+- **Search** — type a term and press Enter to find matching commits.
+- **At risk** — checkouts with uncommitted, unpushed or stashed work, filterable
+  by repo or branch.
+- **Timeline** — the most recent commits across every indexed workspace.
+- **Scan** — pick a workspace root and index it in the background.
+
+Selecting any row lets you copy its path or open the folder in Files.
+
+### Install
+
+Grab the `devmem-gui` archive for your platform from the
+[releases page](https://github.com/rushikeshg25/devmem/releases) (Linux/amd64),
+unpack it, and install the binary, icon and launcher entry:
+
+```bash
+install -Dm755 devmem-gui ~/.local/bin/devmem-gui
+install -Dm644 packaging/icon.png ~/.local/share/icons/hicolor/256x256/apps/devmem.png
+install -Dm644 packaging/devmem-gui.desktop ~/.local/share/applications/devmem-gui.desktop
+```
+
+DevMem then appears in the GNOME activities launcher, or run `devmem-gui` directly.
+
+### Build from source
+
+The GUI needs CGo and the OpenGL/X11 development headers:
+
+```bash
+sudo apt-get install -y gcc libgl1-mesa-dev xorg-dev   # Ubuntu/Debian
+make build-gui    # produces ./devmem-gui
+make run-gui      # build and launch
+```
+
+> The `devmem` CLI itself stays pure Go and needs none of these — only the GUI
+> binary requires CGo, which is why it is a separate build.
+
 ## How it works
 
 - Discovery walks the root and records each git checkout, treating a `.git`
@@ -143,7 +184,8 @@ Pruned 1 repos and 1 empty workspaces
 ## Development
 
 ```bash
-make build      # compile the binary
+make build      # compile the CLI binary
+make build-gui  # compile the desktop GUI (needs CGo + GL/X11 headers)
 make test       # run the test suite
 make cover      # run tests with a coverage summary
 make check      # fmt, vet and test
@@ -156,6 +198,8 @@ Releases are built and published automatically by GitHub Actions whenever a
 version tag is pushed. [GoReleaser](https://goreleaser.com) cross-compiles the
 binaries (linux/darwin/windows × amd64/arm64), stamps the version into
 `--version`, and attaches the archives plus `checksums.txt` to a GitHub Release.
+The desktop `devmem-gui` is built for Linux/amd64 (CGo) and published as its own
+archive bundled with the `.desktop` entry and icon.
 
 To cut a release:
 
