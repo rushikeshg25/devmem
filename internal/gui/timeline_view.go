@@ -22,6 +22,11 @@ func newTimelineView(svc *Service, win fyne.Window) (fyne.CanvasObject, func()) 
 		newCommitCell,
 		func(i widget.ListItemID, o fyne.CanvasObject) { updateCommitCell(o, hits[i]) },
 	)
+	list.OnSelected = func(i widget.ListItemID) {
+		h := hits[i]
+		showPathActions(win, h.Repo, h.Workspace)
+		list.Unselect(i)
+	}
 
 	status := widget.NewLabel("")
 

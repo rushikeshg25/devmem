@@ -25,6 +25,11 @@ func newWIPView(svc *Service, win fyne.Window) (fyne.CanvasObject, func()) {
 			setTwoLineCell(o, repoTitle(rs), rs.Path)
 		},
 	)
+	list.OnSelected = func(i widget.ListItemID) {
+		rs := repos[i]
+		showPathActions(win, rs.Name, rs.Path)
+		list.Unselect(i)
+	}
 
 	status := widget.NewLabel("Showing all at-risk checkouts. Filter by name or branch above.")
 
