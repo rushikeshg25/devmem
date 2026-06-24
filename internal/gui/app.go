@@ -5,6 +5,7 @@ package gui
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -25,8 +26,32 @@ func SetVersion(v string) {
 // closed. dbPath is the SQLite database to read from and index into.
 func Run(dbPath string) {
 	a := app.NewWithID("dev.devmem.gui")
-	w := a.NewWindow("DevMem")
+	w := a.NewWindow("DevMem " + appVersion)
 	w.Resize(windowSize)
-	w.SetContent(widget.NewLabel("DevMem"))
+
+	svc, err := NewService(dbPath)
+	if err != nil {
+		w.SetContent(widget.NewLabel("Failed to open database: " + err.Error()))
+		w.ShowAndRun()
+		return
+	}
+	defer svc.Close()
+
+	wipView, reloadWIP := newWIPView(svc, w)
+	timelineView, reloadTimeline := newTimelineView(svc, w)
+	scanView := newScanView(svc, w, func() {
+		reloadWIP()
+		reloadTimeline()
+	})
+
+	tabs := container.NewAppTabs(
+		container.NewTabItem("Search", newSearchView(svc, w)),
+		container.NewTabItem("At risk", wipView),
+		container.NewTabItem("Timeline", timelineView),
+		container.NewTabItem("Scan", scanView),
+	)
+	tabs.SetTabLocation(container.TabLocationLeading)
+
+	w.SetContent(tabs)
 	w.ShowAndRun()
 }

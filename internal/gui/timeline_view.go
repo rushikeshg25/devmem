@@ -12,8 +12,9 @@ import (
 )
 
 // newTimelineView builds the timeline tab: the most recent commits across every
-// indexed repo, newest first, with a button to refresh after a scan.
-func newTimelineView(svc *Service, win fyne.Window) fyne.CanvasObject {
+// indexed repo, newest first, with a button to refresh after a scan. It returns
+// the content and a reload func callers can invoke after a scan.
+func newTimelineView(svc *Service, win fyne.Window) (fyne.CanvasObject, func()) {
 	var hits []store.SearchHit
 
 	list := widget.NewList(
@@ -39,5 +40,5 @@ func newTimelineView(svc *Service, win fyne.Window) fyne.CanvasObject {
 	load()
 
 	header := container.NewBorder(nil, nil, nil, refresh, widget.NewLabel("Recent activity across all workspaces"))
-	return container.NewBorder(header, status, nil, nil, list)
+	return container.NewBorder(header, status, nil, nil, list), load
 }

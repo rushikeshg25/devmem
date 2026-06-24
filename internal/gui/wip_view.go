@@ -13,7 +13,8 @@ import (
 
 // newWIPView builds the at-risk tab: checkouts with uncommitted, unpushed or
 // stashed work — the work most likely to be lost when a workspace is deleted.
-func newWIPView(svc *Service, win fyne.Window) fyne.CanvasObject {
+// It returns the content and a reload func callers can invoke after a scan.
+func newWIPView(svc *Service, win fyne.Window) (fyne.CanvasObject, func()) {
 	var repos []store.RepoStatus
 
 	list := widget.NewList(
@@ -42,8 +43,11 @@ func newWIPView(svc *Service, win fyne.Window) fyne.CanvasObject {
 	entry.SetPlaceHolder("Filter at-risk work by repo or branch…")
 	entry.OnSubmitted = load
 
-	// Populate immediately so the tab is useful before any filter is typed.
-	load("")
+	// reload re-reads the unfiltered list, e.g. after a scan.
+	reload := func() { load("") }
 
-	return container.NewBorder(entry, status, nil, nil, list)
+	// Populate immediately so the tab is useful before any filter is typed.
+	reload()
+
+	return container.NewBorder(entry, status, nil, nil, list), reload
 }
